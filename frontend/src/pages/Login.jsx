@@ -15,7 +15,22 @@ export const Login = () => {
   const [identifier, setIdentifier] = useState('');
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState(null);
+  const [showServerModal, setShowServerModal] = useState(false);
+  const [serverUrlInput, setServerUrlInput] = useState(
+    localStorage.getItem('chatconnect_server_url') || ''
+  );
   const navigate = useNavigate();
+
+  const handleSaveServer = () => {
+    if (serverUrlInput.trim()) {
+      localStorage.setItem('chatconnect_server_url', serverUrlInput.trim());
+      setToast({ message: 'Server address updated!', type: 'success' });
+    } else {
+      localStorage.removeItem('chatconnect_server_url');
+      setToast({ message: 'Default server restored', type: 'info' });
+    }
+    setShowServerModal(false);
+  };
 
   const handleSendOTP = async (e) => {
     e.preventDefault();
@@ -66,7 +81,78 @@ export const Login = () => {
     >
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
 
+      {/* Server URL Config Modal for Mobile APK */}
+      {showServerModal && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.7)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              background: 'var(--surface-card)',
+              borderRadius: '16px',
+              padding: '24px',
+              width: '100%',
+              maxWidth: '360px',
+              border: '1px solid var(--border-light)',
+            }}
+          >
+            <h3 style={{ fontSize: '17px', fontWeight: '700', marginBottom: '8px' }}>⚙️ Server Configuration</h3>
+            <p style={{ fontSize: '12.5px', color: 'var(--text-sub)', marginBottom: '14px', lineHeight: '1.4' }}>
+              If running this APK on a mobile phone, enter your backend server URL (e.g. your PC's IP <code>http://192.168.1.X:8000</code> or deployed backend):
+            </p>
+            <input
+              type="text"
+              value={serverUrlInput}
+              onChange={(e) => setServerUrlInput(e.target.value)}
+              placeholder="e.g. http://192.168.1.5:8000"
+              className="input-control"
+              style={{ width: '100%', boxSizing: 'border-box', marginBottom: '16px' }}
+            />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <Button variant="secondary" onClick={() => setShowServerModal(false)} style={{ flex: 1 }}>
+                Cancel
+              </Button>
+              <Button onClick={handleSaveServer} style={{ flex: 1 }}>
+                Save
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div>
+        {/* Top bar with Server Settings Icon */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '-20px' }}>
+          <button
+            type="button"
+            onClick={() => setShowServerModal(true)}
+            style={{
+              background: 'rgba(255, 255, 255, 0.06)',
+              border: '1px solid var(--border-light)',
+              borderRadius: '20px',
+              padding: '6px 12px',
+              color: 'var(--text-sub)',
+              fontSize: '12px',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+            }}
+            title="Configure Server URL"
+          >
+            ⚙️ Server IP
+          </button>
+        </div>
+
         {/* App Logo & Header */}
         <div style={{ textAlign: 'center', margin: '20px 0 18px' }}>
           <div

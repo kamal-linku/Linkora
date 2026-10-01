@@ -20,12 +20,24 @@ class WebSocketService {
       return;
     }
 
-    const host = window.location.host;
-    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const custom = typeof window !== 'undefined' ? localStorage.getItem('chatconnect_server_url') : null;
     const configuredWsUrl = import.meta.env.VITE_WS_URL;
-    const wsUrl = configuredWsUrl
-      ? `${configuredWsUrl}?token=${encodeURIComponent(token)}`
-      : `${protocol}//${host}/api/ws?token=${encodeURIComponent(token)}`;
+    let wsUrl;
+    if (custom) {
+      const clean = custom.trim().replace(/\/+$/, '').replace(/^http/, 'ws');
+      wsUrl = `${clean}/api/ws?token=${encodeURIComponent(token)}`;
+    } else if (configuredWsUrl) {
+      wsUrl = `${configuredWsUrl}?token=${encodeURIComponent(token)}`;
+    } else if (
+      typeof window !== 'undefined' &&
+      (window.location.protocol === 'capacitor:' || window.location.protocol === 'ionic:')
+    ) {
+      wsUrl = `ws://10.0.2.2:8000/api/ws?token=${encodeURIComponent(token)}`;
+    } else {
+      const host = window.location.host;
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      wsUrl = `${protocol}//${host}/api/ws?token=${encodeURIComponent(token)}`;
+    }
 
     try {
       this.ws = new WebSocket(wsUrl);

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Linkora</string>
+    <string name="title_activity_main">Linkora</string>
+    <string name="package_name">com.chatconnect.linkora</string>
+    <string name="custom_url_scheme">com.chatconnect.linkora</string>
+</resources>
