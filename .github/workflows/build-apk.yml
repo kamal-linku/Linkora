@@ -58,7 +58,8 @@ jobs:
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-build.log
           STATUS=${PIPESTATUS[0]}
           if [ $STATUS -ne 0 ]; then
-            ERR_SNIPPET=$(tail -n 25 gradle-build.log | tr '\n' ' ')
+            ERR_SNIPPET=$(grep -B 2 -A 8 -i "Execution failed for task" gradle-build.log | head -n 10 | tr '\n' ' ')
+            if [ -z "$ERR_SNIPPET" ]; then ERR_SNIPPET=$(tail -n 25 gradle-build.log | tr '\n' ' '); fi
             echo "::error title=Gradle Build Failure::$ERR_SNIPPET"
             echo "### ❌ Gradle Build Error Details" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
