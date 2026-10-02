@@ -55,6 +55,7 @@ jobs:
       - name: Build Android Debug APK
         working-directory: ./frontend/android
         run: |
+          set -o pipefail
           ./gradlew assembleDebug --no-daemon --stacktrace 2>&1 | tee gradle-build.log || (
             echo "### ❌ Gradle Build Error Details" >> $GITHUB_STEP_SUMMARY
             echo '```' >> $GITHUB_STEP_SUMMARY
